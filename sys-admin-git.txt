@@ -1,0 +1,3 @@
+git rm --cached log.txt
+this removes a file that has been staged for commit. 
+look at the gitignore file. You add a file or folder here to stop it being added to the repo. 
