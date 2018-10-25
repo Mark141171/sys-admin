@@ -1,0 +1,61 @@
+PATH
+echo $PATH to find out where the sudo command comes from
+which sudo
+To find out whick bin directory the sudo command resides in
+
+In a bash script, if you are going to use the sudo command then you should put in the path to sudo. Example:
+/usr/bin/sudo
+
+PREPENDING AND APPENDING TO $PATH
+To append:
+PATH=$PATH:/some/dir - This adds something to the end of $PATH. 
+To prepend:
+PATH=/root:$PATH - You would do this if you want ths folder searced before the other folders in $PATH 
+A hacker would create a file called root and prepend it to $PATH so that when you run sudo it does something else. The file they called root would be executed. 
+This is why you put the absolute path to the files you are going to call commands or use in your bash script. That way no other file called root can be used in the execution of the script. 
+
+MODIFYING $PATH IN ~/.bash_profile
+
+THE SCRIPT COMMAND 
+This records a shell session as a script. This comes in handy if you want to save it as documentation or as proof of something you did. 
+
+To start a script you type script myfile.txt(or.log) then it records everything you do. You can write comments by using the # symbol before you write any text. To exit the script session you type Ctrl + D. 
+
+REAL-TIME RECORDING WITH SCRIPT
+script myscipt.log --timing=time.log 
+Then everything you do is recorded. To view that recording you use:
+scriptreplay -s myscipt.log --timing=time.log - This plays everything back to you in realtime. 
+
+LOG AS A SINGLE COMMAND 
+script -c 'netstat -tupln' netstat.log (-c means a single command) the command is in quotes because if it was not then it would just run netstat and ignore the -tupln switches. This is useful if you need a record of the output of some command. 
+
+SHELL ALIASES
+The reason for creating aliases for commannds is to cut down on the amount of typing that it takes to write out a long commnd. You create an alias that is one or two letters to take the place of that long string of commands or letters. 
+
+To alias the command ls -lra:
+alias lr="ls -lra"
+Now when you type lr it is the same as if you had typed ls -lra. This will is only good for this shell session. This alias will not persist if I close the shell.
+
+Think of them like variables for other commands.
+Persistence is acheived by editing the .bashrc file. Go to the very end of that file and declare it like a variable: alias lr="ls -lra"
+When you do this it will not work until you close the current shell session and open a new shell. You check for persistence in the new shell by typing alias | grep lr 
+
+UNSET AN ALIAS
+unalias lr - but this will only work for the current shell session. If you have edited the bashrc file to include the alias then it persists in a new shell session. 
+
+LSOF
+Stands for list open files. When you type this command you are telling the kernel to give you a list of all the open files. 
+
+Here are some lsof commands:
+1. lsof - lists all the open files. 
+2. lsof /var/log/nginx/access.log - If you pass the path to a file as an argument to lsof it will tell you which processes have that file open. 
+3. lsof -p 1192 - finds all files that a process has open and is reading and writing too. 
+4. lsof -p 1192 | grep bin - This is similar to the previous command but it lets you know where the binary for that process is. 
+5. lsof -p 1192 | grep .so - which shared libraries does the process have open
+6. lsof -p 1192 | grep log - which file is the process logging to
+7. lsof /lib/x86_64-linux-gnu/libssl.so.1.0.0 - which processes have library x open comes in handy if you are using a newer version of this library and you want to see which processes are still using the old one so that you can stop and restart them. 
+8. lsof -u username - which files does user x have open
+9. lsof -i :80  - which process is listening on port x 
+10 lsof -i tcp which process is using protocol y 
+ 
+MONITORING WITH MONIT

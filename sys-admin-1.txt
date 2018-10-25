@@ -1,0 +1,419 @@
+Pipes And Redirection
+Input - Keyboard
+Output - Shell
+Error - Shell
+
+STDIN --> 0 
+STDOUT --> 1
+STDERR --> 2
+
+Each process that runs in linux has three channels, STDIN, STDOUT, STDERR. These channels have numbers (see above) that corespond to them. 
+
+REDIRECTION
+To write text to a file:
+echo "I want to write to a file" 1> text.txt and the sentence will be added to a file - Note you do not need
+to add the 1 before the > symbol. But this overwrites the files.
+
+To append text to a file:
+echo "I want to add some text to a file" >> text.txt - This will append the text to the end of the file. It is worth nothing that if you are not in that directory you can still append or write text by including the absolute path of the file. You can also cat the file by including the absolute path of the file. 
+
+If the file does not yet exist then it will be created for you. So make sure you type the name of the file correctly.
+
+You write meta-information to about one file to another. This would be handy for writing information on some files to a log file. It could be done using a loop. Example:
+ls -alh practice.txt >> more_practice.txt
+
+To write an error from STDERR to a file you need to use the number 2 as an option before you redirect. Example:
+ls alh imadeaballsofthissentencebynotincludingspaces 2>> err.txt. The must be no whitespace between the number and the arrows. In the above example it creates the err.txt file as well as writing the error message to the file. 
+
+Greater then > for input redirection and the smaller than sign < for output redirection. To send the contents of a text file in an email you would use:
+mail -s "This is the subject line" mark < message.txt - the -s switch is the subject line and mark is the user to whom you are sending the mail. 
+
+PIPES 
+ps aux
+list processes (a) all process (u) convert user id's to user names (x) show me processes that are not attached to a terminal or tty. This shows too much information and there is no pagination. 
+ps aux | less. this will list the processes but it will allow for pagination. Less checks how big your screen is and outputs the information you asked for one screen at a time. It will allow you to scroll up and down and use your arrow keys. Rather then have all information you looked for one screen it makes it spread out and scrollable.
+
+ Pipes (|) allow you to filter with other commands to search for something. I think it is a way of chaining commnds together. It is a tool for filtering, searching and sorting data. 
+
+FILTERING OUTPUT AND FINDING THINGS
+An example of using pipes to filter text is: You have a file - maybe containing a json object but something with key value pairs:
+mark:we
+user:love
+someone:linux
+To get the second item or the value of the key value pair you would do this:
+cat test.txt | cut -d: -f2
+The cut command takes the output of the first command (cat) which reads the file then looks for the delimeter (-d) the delimeter in this case in the colon (:) so that goes immediatly to the right of the -d switch. Cut then uses f2 to divide it into fields one and two and selects field two (f2).
+
+Another example is sort used we pipes:
+cat test.txt | sort -bf : b ignores the leading whitespace f case insensitive sort by first letter. I need to check if bf means (by first letter)
+
+cat file.txt | uniq will stop duplicate entries printing to screen.
+
+grep is a searching finding filtering tool. cat file.txt | grep user - This will all instances of the line with user in that file. Another way of producing the same output as before: grep someone file.txt
+grep someone ./* - This searches all the files in the current directory for that word and returns all matches with that word and the filenames. 
+grep somone ./* | uniq finds searches all the files in the current directory and does not return duplicates. 
+grep someone ./* | uniq | cut -d: f1 this gives us unique file names that contain the string someonoe. 
+
+PACKAGE MANAGER
+To search for some software you use - apt-cache search htop - with htop being the name of the software that you are looking for. 
+To install software you want to install - sudo apt install htip. - this will istall htop onto your machine. 
+cat /etc/apt/sources.list - lets you see the list of software repostitories that you are subscribed to. 
+sudo apt update - To update the software on your machine
+sudo apt upgrade - To upgrade the software on your machine after you have updated it
+sudo apt install - To insatll new software - takes the name of the software you want as the final argument
+sudo apt uninstall - To uninstall software - takes the name of the software you to uninstall as the final argument.
+apt-cache search - To search for software - takes the name of the software as the final argument
+
+PPA - Personal Package Archive - To get software that is not found in one of the repostitories that you are subscribed to:
+sudo add-apt-repository ppa:cassou/emacs - then run sudo apt update - NOTE - This can be dangerous as you are using root privileges and this can add bad software or malicious software to your machine. 
+
+FILE PERMISSIONS
+There are nine permission bits. 
+drwxr-xr -x 2 mark mark 4096 Apr 23 23:48 Desktop
+First Column - Owners Group - Everyone else
+Not including the first letter they are read in blocks of three including the - character. 
+The owner can read write and execute or -rwx
+d - file type - in this case a directory. If this first character is a - then it means that it is a file and not a directory. 
+r - read
+w - write
+x - execute
+
+The owners group can read write but not execute
+r-x
+r read
+- not write
+x execute
+
+Everyone else can
+r - read
+- not write
+x execute
+
+To change file permissions you use the chmod command followed by a number. 
+chmod 7 means - read write execute
+chmod 6 means - read write
+chmod 5 means - read execute
+chmod 4 meand - read
+chmod 3 means - write execute
+chmod 2 means - write
+chmod 1 means - execute
+chmod 0 means - no rights at all
+
+You will primarily be dealing with: 7,6,4,0
+chmod 777 means full rights for owner group and everyone else - most least secure setting
+chmod 77 filename changes the persmissions to read write execute for the owner ownersgroup and everyone else
+You can also chmod a directory by using chmod 777 dirname or you can do it recurisvely change it using chmod -R 777 dirname
+
+chown changes the owner of the file - You could change the owner of a folder from root to the user by using chown owner:group dirname
+Look up more on chwon before you do anything else. 
+
+USER ACCOUNT MANAGEMENT
+To manage accounts it is best to become root. This is acheieved by typing - sudo -i 
+To see what user accounts are on the machine type - tail /etc/passwd - remember tail reads the last ten (could be 20) lines of a file.
+There are 7 fields that a user has
+1. username
+2. x - in place of a password
+3. userid
+4. groupid
+5. information about the user - email and more
+6. home directory for the user - /home/mark
+7. default shell
+
+When you run this command you will see all users on the machine - users you have created and service users like ssh
+
+A quick way to see who the users are while looking at this screen is to see if the user has bin/bash and the end of the sentence. If they do then they are a user. If it reads /bin/false/ or /user/sbin/nologin then there are not a user and probably a process of some sort.
+
+If you run tail /etc/shadow you will see all the same users real ones and service ones. If the user has an asterisk after their name that means tht they cannot login. If a user has a password to login you disalble it here by editing the file and putting an exclamation mark (!) after their name.
+Fields:
+1. username
+2. hashed password
+3. date password was set
+4. date password expires
+5. time after expiration password is still valid
+
+If you run tail etc/group you can see yet more information
+1. group - and the end of the line will be the name of the members of the group.
+
+useradd -m -d - to add a user, -m create the home directory, -d to define where the directory is. You can define a uid by tying -u, -s /bin/bash to define a default shell. If you don't define /bin/bash the user will get whatever the default shell is on the linux system. Finally you end with the username. Command in full to define a user: 
+
+useradd -m -d /home/sandra/ -s /bin/bash sandra
+Then you create a password:
+passwd sandra
+When you type the above command you will be asked to enter a new unix password. When you enter the password you will be asked to renter the unix password. 
+
+usermod -L sandra will lock the account so that the password will not work. 
+usermod -L sandra will unlock the account so that the password will work. 
+ls /etc/skel to check the home directory for the new user. 
+
+usedel sandra - to delete a user. But this does not delete the home directory for this user. 
+
+Look up - newusers with the man pages - by typing man newusers to see how to add a batch of new users. 
+
+PROCESSES - LIFE-CYCLE
+All processes (except for init/systemd) are created by some other process first. The parent process os it forks (or clones itself) to create the child process. The child process starts another process by cloning itself. 
+
+A process has two parts to it.
+1. The address space - the memory address it writes to - the ram
+2. The kernel data structures that deal with the process:
+    - who owns the process
+    - what process spawned it
+    - what address space it is allowed to write to
+    - what priority it is running at
+    - how much in terms of resources can it use
+    - what files and network ports is using - is allowed to use
+    - the signal mask
+
+Each process has an id - pid 
+The process with the pid of one used to be init but is now systemd 
+systemd has a pid of 1 because it is the very first process that runs and it is the mother of all the other processes. All the other processes are spawned from it. 
+
+As soon as process is created it gets the next available pid. Processes are unique. You can only have two processes with the pid of one if there is a virtual machine running on a host machine. The VM will think that it is a real machine. 
+
+Each process is spawned by a parent. So if a process is causing a problem it is good to know what the parent process spawned it and what is the pid of the parent process. If the parent process has died then all processes whose parents have dies are re-parented to init or in this cause systemd. 
+
+UID AND EFFECTICE UID
+The uid of a process is basically which user owns this process. 
+The euid is a process spawned by a user but does not particulary need the permissions of that user. 
+You also have guid and eguid which stand for group id and effective group id. 
+
+Niceness is the priority of a process. The higher the niceness number means that it is being nice to other process because it is not hogging resources. The lower the niceness number the more resources it is using. So if you have a low priority task you set the niceness number high. 
+
+The init or systemd process is started by the kernel - with a process id (pid) of 1 on boot. Then init or systemd runs all the startup scripts. 
+A process will have a return value that it sends to the kernel when it is completed. On receiving this value the kernel will kill the process and notify the parent process that the child process is dead. 
+
+PROCESS - SIGNALS
+Signals are how processes communicate information about themself to other processes and to the kernel and how the kernel communicates information about the state of the system and the state of the hardware to processes. 
+
+You kill a process with the kill command and it's pid:
+kill 2138 will kill the process with the pid of 2138. Kill with a number flag assumes kill -15 which is the terminate command. This gives the process time to halt correctly without losing any data. If you need to kill a process because it is acting maliciously then you run:
+kill -9 2148. The -9 flag causes instant death. This can be dangerous as the process will not have time to halt in a corrct manner and data can be lost. 
+You can kill all the processes for a specif user: 
+sudo pkill -u dave - this will kill all of daves process. 
+
+State, Niceness, and How to Monitor Processes
+Every process wants cpu time and the kernel is responsible for scheduling what processes get cpu time and when. 
+There are four states that a process can be in:
+1. Runnable - the process is ready to run
+2. Sleeping - the process could be waiting for something
+3. Zombie State - the process is finished it's task and is waiting to give information back and be killed by the kernel
+4. Stopped - the process may have been in the middle of doing something but because of some other process sending the sigstop signal to it it is stopped and waiting for the sigcont signal so it can resume where it left of. 
+
+If you have a lot of zombie processes then it is a good idea to find the parent id. This means the parent process has not collected information from them. That is why they are in a zombie state. 
+The most common tool for monitor processes is top. 
+To send signals: in htop scroll to the process you want to send a signal to and hit the f9 button. Then the process stays highlighed. There will be a mehtod with the various kill commands on the left side of the screen. You choose one of these and hit enter and the process will be killed. The f15 is normally the default kill command. It is best to use that as kill 9 can cause data corruption. 
+
+To give a process a niceness number:
+nice -n 15 /backup/not/important/ - this is low priority
+nice -n -20 /backup/very/important/ - this is urgent priority
+
+You can change the niceness number of a process using the renice command.
+sudo renice -5 2744 - the 2744 is the pid number.
+Although this can be done in htop and using f7 and f8 to change it up or down. 
+
+
+THE FILE SYSTEM - A OVERVIEW
+A side note: df -ah shows us all the mounted file-sytems on the machine. 
+The proc file-system is where the kernel posts information about active processes. It is as file-system where most of the process monitoring data is posted by the kernel - I think proc has a virtual file system. The kernel publishes to it information about the state and meta-information about running processes. 
+
+Everything is linux communicates with the kernel through the file system. The hardware does this is /dev directory.
+For all the hardware you have a file that refers to its driver, to where it is mounted and the kernel organises communication between those two things. The software that runs the device and the software on the device. 
+
+Sockets - inter-process communication channels - network sockets and all of the internet traffic flows through the file system. Other processes on the machine talk to each other by reading to or writing from files. 
+
+You can do ls on any file or directory from anyhere you are once you remember to ls the absolute path of what you are looking to list. If I am in /proc and want to ls Desktop then to list everything in the Desktop directory I would need to ls /home/mark/Desktop. 
+
+THE FILE SYSTEM - A DEEP DIVE 
+/etc - thisis the palce for all the configuration data for your applications. When you install an application it will create a directory here and you will have all its configuration files and configuration data here. When you need to check how something is configured this is the most likely the first place you will check. If something is acting weird you use htop to see if it is running. Then in etc you would check how it is configured. 
+
+A lot of the secure system binaries live in the sbin folder. The regurlar binaries are held in the bin folder. Any applications on your system will have a link in here. In the bin folder a lot of the binaries will have links (symlinks) to itself. This is becasue bin is on the search path for all users. Citical files that you machine needs to get up and running are held here. You should not mess around here. You will most likely never need to modify anything here. 
+
+The /tmp folder is for temporary files. Processes will often stash data here but by the time they have completed they should have cleared out any of the data they have stored here. You will probably only find yourself clearing data from here. The contents of /tmp are deleted everytime you power down the machine. 
+
+The /home directory contains all the users home folders. 
+
+The systems libaries and shared libaries are in /lib. Comparable to dll's in windows. Libaries on your system that your software can use. 
+
+If you run man hier it will give all the information you need about the hierarchy of the file system and what is held in each directory and why. 
+
+The /bin directory is where your base os commands are. In unix systems this is part of the base operating system. In linux they put links in the bin directory and do not install binaries there. 
+
+The /boot directory is where ther kernel and bootloader (grub) files live. This is what linux is. 
+
+the /dev directory is where all the information on devices on the machine lare listed. Linux names things sd for a hardisk sda if the first hard drive it sees, sdb is the second, sdc the third and so on. If there is a number after sda - like sda1 that is the partition on the disk. 
+
+The /usr directory is sort of a subdivided list of non super essentials files and commands. Most of the binaries (programs) on the machine are in usr/bin. In here you have another sbin folder with a lot of sysadmin commands and things the sysadmin can use. 
+
+The /var directory is where the all of the system logs are kept. 
+
+The /media is the mount directory where auto-mounted things go. on most systems this is /mnt. 
+
+The /opt this is where some people keep any extra software other than the base install here. Opt is for optional software. If you are manually istalling software instead of using the package manager this is where it would go if you were running ./make or ./install. That softwares files would live here. Then you would make a link from bin the executable binary for that software is in opt. 
+
+LINUX FILE TYPES
+When you do a long listing (ls -l) if the first bit is - then it means it is just a txt file. if the first bit is l then it is a symbolic link (soft link). If the first bit is a b the it is a block device file. If the first bit is c then it is character device file. 
+ - : a regular file
+ d : a directory file
+ l : symbolic link file
+ b : block device file (hard drive)
+ c : character device file (mouse, keyboard)
+
+ Directories
+ Directories contain references to the names of other files and directories in them. What ever directory a file is in - that directory contains information about that file. 
+
+HOW SCHEDULING PROCESSES WORK ON LINUX
+cron - each user haas crontab. This is atable of the processes that the user wants to schedule in the future. To list you contrab:
+contrab -l
+If you get the message saying no crontab for user mark then type
+crontab -e
+You will be asked to select an editor to open the crontab with. 
+Each cron job (task) must be defined through a single line. There are six fields that must be filled. Example:
+15 10 * * echo "$(date): checking in." >> /home/mark/hithere.txt
+
+Fields:
+1. Minute that the job should run at
+2. Hour 10 that the job should run at
+3. Day of the month that the job should be run at (*) star for every or any
+4. Month that it should be run on
+5. Day of the week it should be run on
+6. Cmd - the commnd itself In the case above it is to echo the date checking in to the hithere.txt file in /home/mark
+
+The users crontabs are kept in /var/spool/cron/crontabs
+
+Ther is another place where cron jobs are kept:
+/etc/cron.d 
+this is where packages that you have installed to install package specific scheduled cron jobs. This is so that they do not pollute a users file. 
+
+There is also a system wide crontab in /etc/crontab -  This has an extra field where you can specify the user. 
+You can use comma's to seperate values into a list. For the days you could use: 1,3,5,7.
+
+As root to edit any users crontab:
+
+crontab -e -u sandra
+
+General
+Where to find answers to questions - catb.org 
+Networking For System Administratros by Michael W Lucas
+UNIX and Linux System Administration Handbook (4th Edition) by Evi Nemeth and Garth Snyder
+Read RFC's 
+
+WINDOWS, PANES AND SESSIONS OVER SSH 
+Tmux cheatsheet
+# session management
+tmux ls (or tmux list-sessions)
+tmux new -s session-name
+Ctrl-b d Detach from session
+tmux attach -t [session name]
+tmux kill-session -t session-name
+
+Ctrl-b c Create new window
+Ctrl-b d Detach current client
+Ctrl-b l Move to previously selected window
+Ctrl-b n Move to the next window
+Ctrl-b p Move to the previous window
+Ctrl-b & Kill the current window
+Ctrl-b , Rename the current window
+Ctrl-b q Show pane numbers (used to switch between panes)
+Ctrl-b o Switch to the next pane
+Ctrl-b ? List all keybindings
+
+# moving between windows
+Ctrl-b n (Move to the next window)
+Ctrl-b p (Move to the previous window)
+Ctrl-b l (Move to the previously selected window)
+Ctrl-b w (List all windows / window numbers)
+Ctrl-b window number (Move to the specified window number, the
+default bindings are from 0 -- 9)
+
+# Tiling commands
+Ctrl-b % (Split the window vertically)
+CTRL-b " (Split window horizontally)
+Ctrl-b o (Goto next pane)
+Ctrl-b q (Show pane numbers, when the numbers show up type the key to go to that pane)
+Ctrl-b { (Move the current pane left)
+Ctrl-b } (Move the current pane right)
+
+# Make a pane its own window
+Ctrl-b : "break-pane"
+
+# add to ~/.tmux.conf
+bind | split-window -h
+bind - split-window -v
+
+
+Tmux is very useful. You can install it on a remote server then ssh into the server and run a session like a backup service. You can then log out of the remote server - the tmux process that you started on the remote server will continue to run when you are logged out of the remote server. You can log back in to the remote server and reconnect to the session. 
+
+To create a session with tmux:
+tmux new-session -s mysession
+To see what sessions are in existence:
+tmux list-sessions
+To attach to an existing session:
+tmux attach -t mysession
+
+
+SHARED SESSIONS
+This is done using tmux. You both login to the remote server with you passwords, you are logged in as the same user from two different locations (machines) using ssh and tmux. 
+
+ARCHIVING AND COMPRESSION
+Basic Tar Commands 
+To archive a directory
+tar -zcvf docs.tar.gz Documents/ 
+z - zipping using gzip to compress the archive
+c - create we are creating a new archive
+v - verbose we get one line of output for each file we are archiving and compressing
+f - takes a filename docs.tar.gz 
+
+On remote machines you would generally leave out the v switch as it could be a large directory and being verbose could take a large amount of time. 
+To decompress the tar:
+tar -zxvf docs.tar.gz
+x - extract
+
+DANGEROUS - HOW TO CREATE A TAR BOMB
+tar -zcf ../tarbomb.tar.gz . 
+This is saying: In the directory above this one create a tarbomb.tar.gz file using this directory (the directory that you are currently in) as the base. 
+
+This is why it is best practice to create a directory in which to decompress tar files. It is cleaner and if there are a lot of files in the tarball then you know where they all belong. 
+
+When compressing a file - do not compress it from within the directory you want to archieve or compress. Compress it from outside - from one directory above. 
+
+BASH SCRIPTING
+Bash is good for light task automation - For backups and that kind of thing. 
+wc -l < testfile - this command counts the number of lines in a file. The same thing can be done using:
+cat testfile | wc -l
+The way to tell if somethng has been completed by the command you have written is to include a condtional that echo's a success message to you for the above it would be. 
+
+(cat testfile | wc -l) && echo "Success" 
+
+VARIABLES
+To declare a variabe in bash you type the name with no space and the value in quotes:
+greeting="Hello"
+To call or echo the variable you use the dollar sign:
+echo $greeting 
+To create a variable for a number you don't need quotes:
+theNumber=14
+
+Quoting a variable
+To use a variable in a string the you have to delimit it with cury braces{} 
+echo "That was my ${theNumber}th beer."
+
+Whatever you put in back-ticks is treated as a command:
+echo "There are `wc -l < /etc/group` lines in the /etc/shadow file" 
+Or you assign a command to a variable using back-ticks
+num_lines=`wc -l < /etc/group` then you can use it:
+echo "There are ${num_lines} lines in the /etc/shadow file"
+
+If, when you write a script and you try to execute it but get a permissions error then you need to change the file permissions using chmod. 
+
+Step one would be to do a long listing of the directory usig ls -l to check the permissions of the file. If you do not see the x permission then this is what you need to change using;
+chmod +x filename.sh 
+
+There are three ways to run a shell script though bash;
+1. ./filename.sh
+2. bash filename.sh
+3. source filename.sh - when you run this the exit code can cause the shell to close 
+
+N.B. When you run a shell script with source filename.sh you can type echo $variable_name in the shell and it will echo the variables value to the shell. 
+
+-lt = less than <
+-gt = greater than >
+
+N.B. Also see the .sh scripts in this folder
