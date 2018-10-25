@@ -1,3 +1,20 @@
+Steps to create a remote repostiory. 
+1. Login to github and create a repo
+2. cd into the folder that you want to do.
+3. git init
+4. git commit -m "first commit"
+5. git remote add origin https://github.com/some/suff/decided/by/github
+6. git push -u origin master
+
+
 git rm --cached log.txt
 this removes a file that has been staged for commit. 
 look at the gitignore file. You add a file or folder here to stop it being added to the repo.
+
+When you are trying to merge and get the error:
+error: The following untracked working tree files would be overwritten by merge:
+name of file1
+name of file2
+
+Then git rm --cached name of file1 will not work. You need to checkout the branch you are tying to merge run the rm --cached command then add the files and commit them. Then you checkout the master branch and git merge other-branch. 
+
